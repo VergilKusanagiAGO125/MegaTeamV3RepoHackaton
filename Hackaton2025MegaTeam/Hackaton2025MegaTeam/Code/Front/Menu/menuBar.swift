@@ -11,26 +11,41 @@ struct menuBar: View {
     @Binding var window: [String: Int]
     @Binding var colors: [Color]
     
-    let lstIconBar: [String] = ["carrot.fill", "cup.and.heat.waves.fill", "house.fill", "fork.knife.circle.fill", "person.fill"]
-    let lstNameBar: [String] = ["Categorias", "Bebidas", "Inicio", "Alimentos", "Perfil"]
+    let lstMenuItems: [[String: String]] = [
+        ["name": "Categoria", "icon": "carrot.fill"],
+        ["name": "Bebidas", "icon": "cup.and.saucer.fill"],
+        ["name": "Inicio", "icon": "house.fill"],
+        ["name": "Alimentos", "icon": "fork.knife"],
+        ["name": "Perfil", "icon": "person.fill"]
+    ]
+    
+    @State private var selectMenu: Int = 2
     
     var body: some View {
-        VStack (alignment: .trailing)  {
-            HStack {
-                ForEach (0..<lstNameBar.count) { index in
-                    Button (action: {
-                        window["screen1"] = index
-                    } ) {
-                        VStack {
-                            Image(systemName: "\(lstIconBar[index])")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                            Text("\(lstNameBar[index])")
-                        }
-                    }
-                }
+        HStack {
+            ForEach(lstMenuItems.indices, id: \.self) { index in
+                menuButton(for: index)
             }
-            .padding(20)
+        }
+        .padding(20)
+    }
+    
+    private func menuButton(for index: Int) -> some View {
+        Button(action: {
+            window["screen1"] = index
+            selectMenu = index
+        }) {
+            VStack {
+                Image(systemName: lstMenuItems[index]["icon"] ?? "")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 50, height: 50)
+                    .foregroundColor(selectMenu == index ? colors[2 + index % colors.count] : .gray)
+                
+                Text(lstMenuItems[index]["name"] ?? "")
+                    .font(.caption)
+                    .foregroundColor(selectMenu == index ? colors[2 + index % colors.count] : .gray)
+            }
         }
     }
 }
@@ -38,13 +53,13 @@ struct menuBar: View {
 #Preview {
     @Previewable @State var window = ["night": 1, "login": 1, "screen1": 0, "screen2": 0]
     @Previewable @State var colors: [Color] = [
-        .init(red: 50, green: 50, blue: 50),
-        .init(red: 225, green: 225, blue: 225),
-        .init(red: 255, green: 77, blue: 29),
-        .init(red: 254, green: 205, blue: 56),
-        .init(red: 28, green: 240, blue: 42),
-        .init(red: 51, green: 159, blue: 24),
-        .init(red: 231, green: 16, blue: 138)
+        Color(red: 50/255, green: 50/255, blue: 50/255),
+        Color(red: 225/255, green: 225/255, blue: 225/255),
+        Color(red: 255/255, green: 77/255, blue: 29/255),
+        Color(red: 254/255, green: 205/255, blue: 56/255),
+        Color(red: 28/255, green: 240/255, blue: 42/255),
+        Color(red: 51/255, green: 159/255, blue: 24/255),
+        Color(red: 231/255, green: 16/255, blue: 138/255)
     ]
     menuBar(window: $window, colors: $colors)
 }
